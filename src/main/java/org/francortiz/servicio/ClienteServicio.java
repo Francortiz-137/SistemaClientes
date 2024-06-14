@@ -18,25 +18,39 @@ public class ClienteServicio {
         this.listaClientes = new ArrayList<Cliente>();
     }
 
-    public void retornoListarClientes(){
-        listaClientes.forEach(System.out::println);
+    public void ListarClientes(){
+        listaClientes.forEach(
+                cliente -> {
+                    System.out.println("-------------Datos del Cliente-------------\n");
+                    System.out.println("RUN del Cliente: " + cliente.getRunCliente());
+                    System.out.println("Nombre del Cliente: " + cliente.getNombreCliente());
+                    System.out.println("Apellido del Cliente: " + cliente.getApellidoCliente());
+                    System.out.println("Años como Cliente: " + cliente.getAniosCliente() + " año(s)");
+                    System.out.println("Categoria del Cliente: " + cliente.getNombreCategoria());
+                    System.out.println("\n-------------------------------------------");
+                }
+        );
     }
 
     public void agregarCliente(Cliente cliente){
-        listaClientes.add(cliente);
+        if (cliente != null)
+            listaClientes.add(cliente);
     }
 
-    public Cliente editarCliente(String runAntiguo, String run, String nombre, String apellido, int anios){
-        for (Cliente cliente : listaClientes) {
-            if (cliente.getRunCliente().equals(runAntiguo)) {
-                cliente.setRunCliente(run);
-                cliente.setNombreCliente(nombre);
-                cliente.setApellidoCliente(apellido);
-                cliente.setAniosCliente(anios);
-                return cliente;
-            }
-        }
-        return null;
+    public Cliente editarCliente(Cliente cliente, String run, String nombre, String apellido, int anios){
+        int index = listaClientes.indexOf(cliente);
+
+        if(run != null && !run.isEmpty())
+            cliente.setRunCliente(run);
+        if(nombre != null && !nombre.isEmpty())
+            cliente.setNombreCliente(nombre);
+        if(apellido != null && !apellido.isEmpty())
+            cliente.setApellidoCliente(apellido);
+        if(anios > 0)
+            cliente.setAniosCliente(anios);
+
+        listaClientes.set(index, cliente);
+        return cliente;
     }
 
     public Cliente editarCliente(Cliente cliente, CategoriaEnum categoriaEnum) {

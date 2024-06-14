@@ -1,6 +1,5 @@
 package org.francortiz.vista;
 
-import org.francortiz.modelo.CategoriaEnum;
 import org.francortiz.modelo.Cliente;
 import org.francortiz.servicio.*;
 import org.francortiz.utilidades.Utilidad;
@@ -14,7 +13,6 @@ public class Menu {
     private String fileName = "Clientes";
     private final String fileName1 = "DBClientes.csv";
     private Scanner scanner;
-    private static final String PATH = "src/main/java/org/francortiz/archivos/";
 
     public Menu() {
         clienteServicio = new ClienteServicio();
@@ -68,17 +66,7 @@ public class Menu {
         if(clienteServicio.getListaClientes().isEmpty())
             System.out.println("No hay clientes registrados");
         else
-            clienteServicio.getListaClientes().forEach(
-                    cliente -> {
-                        System.out.println("-------------Datos del Cliente-------------\n");
-                        System.out.println("RUN del Cliente: " + cliente.getRunCliente());
-                        System.out.println("Nombre del Cliente: " + cliente.getNombreCliente());
-                        System.out.println("Apellido del Cliente: " + cliente.getApellidoCliente());
-                        System.out.println("Años como Cliente: " + cliente.getAniosCliente() + " año(s)");
-                        System.out.println("Categoria del Cliente: " + cliente.getNombreCategoria());
-                        System.out.println("\n-------------------------------------------");
-                    }
-            );
+           clienteServicio.ListarClientes();
     }
 
     public void agregarCliente() {
@@ -158,33 +146,33 @@ public class Menu {
         scanner = new Scanner(System.in);
         System.out.println("----------------------------------------");
         System.out.println("1.- Ingrese el nuevo RUN del Cliente: ");
-        String newRun = scanner.nextLine();
-        cliente.setRunCliente(newRun);
+        String run = scanner.nextLine();
+        clienteServicio.editarCliente(cliente,run,null,null,-1);
     }
 
     private void editarNombre(Cliente cliente) {
         scanner = new Scanner(System.in);
         System.out.println("----------------------------------------");
         System.out.println("2.- Ingrese el nuevo Nombre del Cliente: ");
-        String newNombre = scanner.nextLine();
-        cliente.setNombreCliente(newNombre);
+        String nombre = scanner.nextLine();
+        clienteServicio.editarCliente(cliente,null,nombre,null,-1);
     }
 
     private void editarApellido(Cliente cliente) {
         scanner = new Scanner(System.in);
         System.out.println("----------------------------------------");
         System.out.println("3.- Ingrese el nuevo Apellido del Cliente: ");
-        String newApellido = scanner.nextLine();
-        cliente.setApellidoCliente(newApellido);
+        String apellido = scanner.nextLine();
+        clienteServicio.editarCliente(cliente,null,null,apellido,-1);
     }
 
     private void editarAnios(Cliente cliente) {
         scanner = new Scanner(System.in);
         System.out.println("----------------------------------------");
         System.out.println("1.- Ingrese los años del Cliente: ");
-        String newAnios = scanner.nextLine();
+        String anios = scanner.nextLine();
         try {
-            cliente.setAniosCliente(Integer.parseInt(newAnios));
+            clienteServicio.editarCliente(cliente,null,null,null,Integer.parseInt(anios));
         }catch (NumberFormatException e){
             e.printStackTrace();
         }
@@ -192,34 +180,38 @@ public class Menu {
 
     public void importarDatos() {
         scanner = new Scanner(System.in);
-        System.out.println("---------Cargar Datos en Linux o Mac-----------\n" +
-                "Ingresa la ruta en donde se encuentra el archivo DBClientes.csv:\n" +
-                "home/usuario/Desktop\n" +
-                "-----------------------------------------------\n"
-                );
+        System.out.println("Ingresa la ruta en donde se encuentra el archivo DBClientes.csv:\n");
+        String ruta = scanner.nextLine();
+        System.out.println("-----------------------------------------------\n");
+
         archivoServicio = new ArchivoServicio();
-        System.out.println("Ingrese el nombre del archivo: ");
-        String nombre = scanner.nextLine();
-        clienteServicio.setListaClientes(archivoServicio.cargarDatos(PATH+nombre));
+        clienteServicio.setListaClientes(archivoServicio.cargarDatos(ruta+"\\"+fileName1));
         System.out.println("Datos cargados correctamente en la lista");
     }
 
     public void exportarDatos() {
-        System.out.println("Como desea exportar los datos?... (0 = csv,1 = txt)");
+        System.out.println("Seleccione el formato a exportar");
+        System.out.println("1.-Formato csv");
+        System.out.println("2.-Formato txt\n");
+        System.out.println("Ingrese una opcion para exportar");
         scanner = new Scanner(System.in);
         String formato = scanner.nextLine();
-        if (formato.equals("0")) {
+        if (formato.equals("1")) {
             Exportador exportarCsv = new ExportadorCsv();
-            exportarCsv.exportar(PATH+this.fileName1,clienteServicio.getListaClientes());
-        } else if (formato.equals("1")) {
+            System.out.println("Ingresa la ruta en donde desea exportar el archivo clientes.csv: ");
+            String ruta = scanner.nextLine();
+            exportarCsv.exportar(ruta+"\\"+this.fileName1,clienteServicio.getListaClientes());
+            System.out.println("Datos de clientes exportados correctamente en formato txt.");
+        } else if (formato.equals("2")) {
             Exportador exportarTxt = new ExportadorTxt();
-            exportarTxt.exportar(PATH+this.fileName+".txt",clienteServicio.getListaClientes());
+            System.out.println("Ingresa la ruta en donde desea exportar el archivo clientes.txt:");
+            String ruta = scanner.nextLine();
+            System.out.println("-----------------------------------------------\n");
+            exportarTxt.exportar(ruta+"\\"+this.fileName+".txt",clienteServicio.getListaClientes());
+            System.out.println("Datos de clientes exportados correctamente en formato txt.");
         }else{
-            System.out.println("Por favor ingrese un valor valido (0 | 1)");
-            return;
+            System.out.println("Por favor ingrese un valor valido");
         }
-        System.out.println("Exportando datos de clientes...");
-
     }
 
     public void terminarPrograma() {
